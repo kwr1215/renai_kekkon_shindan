@@ -1,0 +1,134 @@
+<h2 class="sr-only">4つの性格軸（恋愛の原動力・関係での役割・判断のしかた・距離感）から<br>恋愛と結婚のタイプを診断する全32問のインタラクティブ診断テスト</h2>
+<style>
+.rk-wrap{padding:1rem 0;max-width:560px;margin:0 auto;font-family:var(--font-sans);line-height:1.7}
+.rk-hide{display:none}
+.rk-btn{display:block;width:100%;text-align:left;padding:14px 16px;margin:8px 0;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);background:var(--color-background-primary);font-size:15px;cursor:pointer;transition:background .15s,border-color .15s}
+.rk-btn:hover{background:var(--color-background-secondary);border-color:var(--color-border-primary)}
+.rk-cta{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border:0.5px solid #D4537E;border-radius:var(--border-radius-lg);background:#FBEAF0;color:#4B1528;font-size:16px;font-weight:500;cursor:pointer}
+.rk-cta:hover{background:#F4C0D1}
+.rk-track{height:8px;border-radius:99px;background:var(--color-background-secondary);overflow:hidden}
+.rk-fill{height:100%;background:#D4537E;border-radius:99px;transition:width .3s}
+.rk-pill{display:inline-block;padding:5px 12px;border-radius:99px;background:#FBEAF0;color:#4B1528;font-size:13px;font-weight:500;margin:3px}
+.rk-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin:14px 0}
+.rk-axis{margin:18px 0}
+.rk-line{position:relative;height:6px;border-radius:99px;background:var(--color-background-secondary);margin:10px 0}
+.rk-dot{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#D4537E;border:2px solid var(--color-background-primary);transform:translate(-50%,-50%)}
+.rk-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary)}
+.rk-back{background:none;border:none;color:var(--color-text-secondary);font-size:13px;cursor:pointer;padding:6px 0}
+.rk-back:hover{color:var(--color-text-primary)}
+</style>
+<div class="rk-wrap">
+  <div id="rk-start">
+    <div style="text-align:center;margin-bottom:8px"><i class="ti ti-heart" style="font-size:40px;color:#D4537E" aria-hidden="true"></i></div>
+    <h2 style="text-align:center;margin:.2rem 0">恋愛・結婚 相性診断テスト</h2>
+    <p style="color:var(--color-text-secondary);text-align:center;margin:.4rem 0 1rem">恋や結婚を長く続けるには、愛情に加えて「性格の相性」が大切です。まずは自分の本当の性格タイプを知り、どんな相手と相性がいいかを診断してみましょう。</p>
+    <div class="rk-card" style="text-align:center">全<b>32問</b>・所要約5分<br><span style="font-size:13px;color:var(--color-text-secondary)">あなたの【性格タイプ】と【恋愛・結婚スタイル】を診断します</span></div>
+    <div style="text-align:center;margin-top:1rem"><button class="rk-cta" id="rk-go"><i class="ti ti-player-play" aria-hidden="true"></i>テストを始める</button></div>
+  </div>
+
+  <div id="rk-quiz" class="rk-hide">
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--color-text-secondary);margin-bottom:6px"><span id="rk-count"></span><span id="rk-pct"></span></div>
+    <div class="rk-track" style="margin-bottom:1.5rem"><div class="rk-fill" id="rk-prog" style="width:0%"></div></div>
+    <p id="rk-q" style="font-size:18px;font-weight:500;min-height:56px;margin:0 0 1rem"></p>
+    <div id="rk-opts"></div>
+    <button class="rk-back rk-hide" id="rk-prev"><i class="ti ti-arrow-left" aria-hidden="true"></i> 前の質問へ戻る</button>
+  </div>
+
+  <div id="rk-result" class="rk-hide"></div>
+</div>
+<script>
+(function(){
+var L=["とても当てはまる","やや当てはまる","あまり当てはまらない","当てはまらない"];
+var W=[1.5,0.5,-0.5,-1.5];
+var axes=[
+ {q:"恋愛の原動力",a:{label:"情熱型",tag:"恋をエネルギーに変えるロマンチスト",love:"全力で相手に向き合い、毎日にときめきを求めます。気持ちが盛り上がるほど魅力が輝くタイプ。",mar:"マンネリを嫌うので、結婚後も二人でイベントや小さな変化を楽しむ工夫をすると長続きします。",s:"愛情をまっすぐ表現でき、相手を大切にする気持ちが伝わる。",c:"盛り上がりすぎて空回りしないよう、刺激を求めすぎに注意。"},
+   b:{label:"安定型",tag:"安心できる時間を育てる癒し系",love:"派手さより信頼を重ねる恋を好み、一緒にいてホッとできる関係づくりが得意です。",mar:"穏やかで居心地のいい家庭を築けます。たまに刺激を取り入れると新鮮さが保てます。",s:"落ち着きがあり、相手に深い安心感を与えられる。",c:"慣れても、好きの気持ちを言葉にすることを忘れずに。"}},
+ {q:"関係での役割",a:{label:"リード型",tag:"頼れるエスコート役",love:"関係をぐいぐい引っ張り、相手をリードするのが得意。頼りがいがあります。",mar:"家庭でも方針を示して場をまとめられます。相手の意見を聞く余白を持つと◎。",s:"決断力と行動力で関係を前に進められる。",c:"自分の考えを押しつけすぎず、相手の声に耳を傾けて。"},
+   b:{label:"サポート型",tag:"さりげなく支える名脇役",love:"相手を立て、そっと支えるのが上手。一緒にいて心地よいと思わせます。",mar:"相手を支え、家庭を陰から温める存在。たまには自分の希望も口に出して。",s:"包容力があり、相手の力を引き出せる。",c:"我慢しすぎて自分を後回しにしないように。"}},
+ {q:"判断のしかた",a:{label:"ロマンチスト",tag:"気持ちと直感を信じる人",love:"「好き」という気持ちを何より大切にし、相手の心の機微にも敏感です。",mar:"愛情表現が豊かで温かい関係を保てます。大事な決断は一度冷静に見直すと安心。",s:"共感力が高く、相手の気持ちに寄り添える。",c:"感情に流されすぎず、現実面もときどきチェック。"},
+   b:{label:"リアリスト",tag:"将来を見据える現実派",love:"気持ちだけでなく、相性や将来性も冷静に見極めるタイプです。",mar:"生活設計や価値観の一致を大切にし、地に足のついた家庭を築けます。",s:"落ち着いた判断で、安定した関係を作れる。",c:"計算高く見えないよう、素直な気持ちも伝えて。"}},
+ {q:"距離感",a:{label:"密着型",tag:"いつも寄り添いたい甘えん坊",love:"一緒の時間や共有を大切にする、愛情たっぷりタイプです。",mar:"いつも寄り添う温かい家庭を作れます。相手の一人時間も尊重するとより安心。",s:"愛情深く、相手としっかり向き合える。",c:"束縛にならないよう、相手のペースも大切に。"},
+   b:{label:"自立型",tag:"ほどよい距離を保つ大人",love:"お互いの時間を尊重し、ちょうどいい距離感で長続きする恋を好みます。",mar:"相手の自由を認め合える成熟した関係を築けます。ときには甘えることも忘れずに。",s:"依存せず、対等で風通しのよい関係を作れる。",c:"クールに見られすぎないよう、愛情は言葉に。"}}
+];
+var Q=[
+ [0,1,"恋に落ちると、相手のことで頭がいっぱいになる"],
+ [0,1,"ドキドキするような刺激的な恋愛にあこがれる"],
+ [0,1,"記念日やサプライズを大切にしたい"],
+ [0,1,"一目惚れをしたことがある、またはしそうだと思う"],
+ [0,-1,"恋愛は刺激よりも、安心できることのほうが大事だ"],
+ [0,-1,"落ち着いて穏やかに過ごせる関係が理想だ"],
+ [0,-1,"派手なデートより、いつもの場所でのんびりするのが好き"],
+ [0,-1,"長く一緒にいられる相手かを最初から考えてしまう"],
+ [1,1,"デートの計画は自分で立てたいほうだ"],
+ [1,1,"二人のことを決めるとき、自分の意見を通したい"],
+ [1,1,"相手を引っ張っていくほうが性に合っている"],
+ [1,1,"集まりでは自然と仕切り役になることが多い"],
+ [1,-1,"相手の希望を優先してあげたいと思う"],
+ [1,-1,"自分で決めるより、相手に任せるほうが気が楽だ"],
+ [1,-1,"相手を支えることに喜びを感じる"],
+ [1,-1,"もめそうなときは、自分が折れて合わせることが多い"],
+ [2,1,"好きという気持ちがあれば、多少の条件は気にしない"],
+ [2,1,"物事を決めるとき、最後は自分の気持ちを優先する"],
+ [2,1,"ロマンチックな雰囲気や言葉に弱い"],
+ [2,1,"相手の気持ちの変化にすぐ気づくほうだ"],
+ [2,-1,"結婚相手は、収入や生活力など現実面も重視する"],
+ [2,-1,"恋愛でも、勢いより冷静な判断を大事にする"],
+ [2,-1,"将来設計が合うかは、気持ちと同じくらい大切だ"],
+ [2,-1,"感情的になっても、最後は筋道で考え直す"],
+ [3,1,"好きな人とは、できるだけ長い時間を一緒に過ごしたい"],
+ [3,1,"連絡はこまめに取り合いたいほうだ"],
+ [3,1,"何でも二人で共有し、隠しごとはしたくない"],
+ [3,1,"離れていると寂しくて落ち着かない"],
+ [3,-1,"恋人がいても、自分ひとりの時間は必要だ"],
+ [3,-1,"お互いの趣味や友人関係は尊重したい"],
+ [3,-1,"毎日連絡がなくても不安にはならない"],
+ [3,-1,"適度な距離感があるほうが、関係はうまくいくと思う"]
+];
+var ans=new Array(Q.length).fill(null),i=0;
+var $=function(id){return document.getElementById(id)};
+$("rk-go").onclick=function(){$("rk-start").classList.add("rk-hide");$("rk-quiz").classList.remove("rk-hide");render()};
+$("rk-prev").onclick=function(){if(i>0){i--;render()}};
+function render(){
+ var q=Q[i];
+ $("rk-count").textContent="質問 "+(i+1)+" / "+Q.length;
+ var p=Math.round((i)/Q.length*100);
+ $("rk-pct").textContent=p+"%";$("rk-prog").style.width=p+"%";
+ $("rk-q").textContent=q[2];
+ $("rk-prev").classList.toggle("rk-hide",i===0);
+ var o=$("rk-opts");o.innerHTML="";
+ L.forEach(function(t,k){
+  var b=document.createElement("button");b.className="rk-btn";b.textContent=t;
+  if(ans[i]===k){b.style.background="#FBEAF0";b.style.borderColor="#D4537E"}
+  b.onclick=function(){ans[i]=k;if(i<Q.length-1){i++;render()}else{finish()}};
+  o.appendChild(b);
+ });
+}
+function finish(){
+ $("rk-prog").style.width="100%";
+ var sc=[0,0,0,0];
+ Q.forEach(function(q,k){sc[q[0]]+=W[ans[k]]*q[1]});
+ var html='<div style="text-align:center"><i class="ti ti-heart" style="font-size:36px;color:#D4537E" aria-hidden="true"></i><h2 style="margin:.3rem 0">あなたの診断結果</h2></div>';
+ var chosen=sc.map(function(v,ax){return v>=0?axes[ax].a:axes[ax].b});
+ html+='<div style="text-align:center;margin:.4rem 0 1rem">'+chosen.map(function(c){return '<span class="rk-pill">'+c.label+'</span>'}).join("")+'</div>';
+ html+='<div class="rk-axis">';
+ sc.forEach(function(v,ax){
+  var norm=Math.max(-1,Math.min(1,v/6));var pos=Math.round(50+norm*50);
+  var dom=v>=0?axes[ax].a.label:axes[ax].b.label;
+  var str=Math.abs(norm)<0.18?"どちらの傾向もバランス型":Math.abs(norm)<0.5?"やや"+dom:"はっきり"+dom;
+  html+='<div style="margin:14px 0"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:2px">'+axes[ax].q+'：<b style="color:var(--color-text-primary)">'+str+'</b></div><div class="rk-line"><div class="rk-dot" style="left:'+pos+'%"></div></div><div class="rk-ends"><span>'+axes[ax].b.label+'</span><span>'+axes[ax].a.label+'</span></div></div>';
+ });
+ html+='</div>';
+ html+='<div class="rk-card"><h3 style="margin:.1rem 0 .5rem"><i class="ti ti-flame" style="color:#D4537E" aria-hidden="true"></i> 恋愛スタイル</h3>'+chosen.map(function(c){return '<p style="margin:.5rem 0;font-size:14px"><span class="rk-pill" style="padding:2px 9px;font-size:12px">'+c.label+'</span> '+c.love+'</p>'}).join("")+'</div>';
+ html+='<div class="rk-card"><h3 style="margin:.1rem 0 .5rem"><i class="ti ti-home-heart" style="color:#D4537E" aria-hidden="true"></i> 結婚スタイル</h3>'+chosen.map(function(c){return '<p style="margin:.5rem 0;font-size:14px"><span class="rk-pill" style="padding:2px 9px;font-size:12px">'+c.label+'</span> '+c.mar+'</p>'}).join("")+'</div>';
+ html+='<div class="rk-card"><h3 style="margin:.1rem 0 .5rem"><i class="ti ti-star" style="color:#BA7517" aria-hidden="true"></i> あなたの強み</h3><ul style="margin:.3rem 0;padding-left:1.2rem;font-size:14px">'+chosen.map(function(c){return '<li style="margin:.3rem 0">'+c.s+'</li>'}).join("")+'</ul></div>';
+ html+='<div class="rk-card"><h3 style="margin:.1rem 0 .5rem"><i class="ti ti-bulb" style="color:#1D9E75" aria-hidden="true"></i> 気をつけたい点</h3><ul style="margin:.3rem 0;padding-left:1.2rem;font-size:14px">'+chosen.map(function(c){return '<li style="margin:.3rem 0">'+c.c+'</li>'}).join("")+'</ul></div>';
+ var ideal=[sc[0]>=0?axes[0].a:axes[0].b, sc[1]>=0?axes[1].b:axes[1].a, sc[2]>=0?axes[2].b:axes[2].a, sc[3]>=0?axes[3].a:axes[3].b];
+ html+='<div class="rk-card" style="border-color:#D4537E;border-width:2px"><h3 style="margin:.1rem 0 .5rem"><i class="ti ti-heart-handshake" style="color:#D4537E" aria-hidden="true"></i> 相性のいいタイプ</h3><div style="margin:.3rem 0">'+ideal.map(function(c){return '<span class="rk-pill">'+c.label+'</span>'}).join("")+'</div><p style="font-size:14px;margin:.5rem 0 0">恋愛の<b>テンポ（情熱／安定）</b>と<b>距離感</b>が近く、<b>関係での役割</b>と<b>判断のしかた</b>が補い合える相手だと、心地よく長続きしやすい組み合わせです。価値観が同じで、足りないところを埋め合えるのが理想形。</p></div>';
+ html+='<div style="text-align:center;margin-top:1rem"><button class="rk-cta" id="rk-restart"><i class="ti ti-refresh" aria-hidden="true"></i>もう一度診断する</button></div>';
+ html+='<p style="font-size:12px;color:var(--color-text-tertiary);text-align:center;margin-top:1rem">※ この診断はオリジナルの参考用ツールです。傾向を楽しむものとしてご活用ください。</p>';
+ $("rk-quiz").classList.add("rk-hide");
+ var r=$("rk-result");r.innerHTML=html;r.classList.remove("rk-hide");
+ $("rk-restart").onclick=function(){ans=new Array(Q.length).fill(null);i=0;r.classList.add("rk-hide");$("rk-quiz").classList.remove("rk-hide");render()};
+}
+})();
+</script>
